@@ -1,48 +1,94 @@
-# Automation IT Administration
+# IT Administration Automation – Active Directory Onboarding System
 
-This repository contains scripts for automating IT administrative tasks, with a focus on **Active Directory** management and **User Onboarding**. The goal is to simplify and automate routine IT processes to improve efficiency and reduce manual errors.
+This repository is dedicated to automating routine IT administrative tasks using PowerShell. It currently includes ..., a system for onboarding users into Active Directory, with functionality for managing users, groups, organizational units, shared folders, and drive mappings.
 
-## Table of Contents
-1. [Overview](#overview)
-2. [Features](#features)
-3. [Prerequisites](#prerequisites)
-4. [Installation](#installation)
-5. [Usage](#usage)
-6. [License](#license)
+📁 **Repository Structure**
+```
+Active-Directory/
+└── Onboarding-System/
+    ├── Backup And Logs/
+    │   └── Events.log
+    ├── Data/
+    │   └── Data.csv
+    ├── GroupsFunc.ps1
+    ├── OrganizationalUnitsFunc.ps1
+    ├── SharedFoldersAndMappingDrivs.ps1
+    ├── UsersFunc.ps1
+    └── main.ps1
+.
+..
+...
+```
 
-## Overview
+---
 
-This project focuses on automating IT administration tasks, starting with **Active Directory** user management and **Onboarding** automation. It is designed to streamline the process of managing user accounts, permissions, and related administrative tasks in an IT environment.
+## 🚀 Features
 
-### Future Plans
+- **User Provisioning** – Automated user creation via `UsersFunc.ps1` using data from CSV.
+- **Group Management** – Create and manage security groups with `GroupsFunc.ps1`.
+- **Organizational Units (OU)** – Automated OU structure creation via `OrganizationalUnitsFunc.ps1`.
+- **Drive Mapping** – Configure shared folders and assign network drives using `SharedFoldersAndMappingDrivs.ps1`.
+- **Logging** – Logs activities in `Backup And Logs/Events.log`.
+- **Data-Driven** – Imports user and group data from `Data/Data.csv`.
 
-The project will expand to include additional automation tasks such as:
+---
 
-- **Azure AD Management**
-- **System Monitoring**
-- **Cloud Infrastructure Automation**
+## ▶️ Getting Started
 
-## Features
+### Prerequisites
 
-- **Onboarding System**: Automates the user onboarding process, including creating new user accounts in Active Directory.
-- **Active Directory Management**: Simplifies common tasks like user creation, group assignments, and permissions management.
-- **PowerShell Automation**: All scripts are written in PowerShell to automate routine IT tasks in a Windows environment.
+- Windows OS with administrative privileges
+- PowerShell 5.1+
+- Active Directory module installed (`RSAT` tools)
+- Execution policy allowing script execution:
+  ```powershell
+  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+  ```
 
-## Prerequisites
+### Running the Script
 
-To use the scripts in this repository, ensure you have the following installed:
-
-- **PowerShell**: The automation scripts are written in PowerShell.
-- **Active Directory Module**: Required for interacting with Active Directory.
-  - You can install it using the command:  
-    ```powershell
-    Install-WindowsFeature RSAT-AD-PowerShell
-    ```
-- **Administrator Permissions**: Some tasks may require administrative privileges.
-
-## Installation
-
-1. Clone the repository to your local machine:
-
+1. Clone the repository:
    ```bash
-   git clone https://github.com/senani-derradji/Automation-IT-Administration.git
+   git clone https://github.com/senani-derradji/Automation-IT-Administration-Tasks.git
+   ```
+
+2. Navigate to the `Onboarding-System` folder:
+   ```bash
+   cd Active-Directory/Onboarding-System
+   ```
+
+3. Run the main onboarding script:
+   ```powershell
+   .\main.ps1
+   ```
+
+> The `main.ps1` script orchestrates calls to each of the function files. Make sure the CSV and other configuration files are prepared.
+
+---
+
+## 📌 Notes
+
+- Keep `Data/Data.csv` updated with accurate user information.
+- Check `Events.log` for execution history and troubleshooting.
+- Script structure allows easy expansion with more PowerShell modules.
+
+---
+
+## 🛠️ Roadmap
+
+- [ ] Add user offboarding functionality
+- [ ] Integrate email notifications
+- [ ] Add GUI interface for onboarding
+- [ ] Extend support for Azure AD
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! Please fork the repository and submit your additions to expand automation functionality.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
