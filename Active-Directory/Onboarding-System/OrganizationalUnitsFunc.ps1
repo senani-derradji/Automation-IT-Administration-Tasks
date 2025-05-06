@@ -1,48 +1,46 @@
-# Check if an OU exists before querying users
-function Get-OUUsers {
-    param (
-        [string]$ouDN
-    )
-
-    try {
-        # Verify if the OU exists in Active Directory
-        $ouExists = Get-ADOrganizationalUnit -Filter "distinguishedName -eq '$ouDN'" -ErrorAction SilentlyContinue
-        if (-not $ouExists) {
-            Write-Host "OU not found: $ouDN" -ForegroundColor Red
-            return @()  # Return an empty array if the OU doesn't exist
-        }
-
-        # Fetch users from the valid OU
-        $users = Get-ADUser -Filter * -SearchBase $ouDN | Select-Object -ExpandProperty SamAccountName
-        return $users
-    } catch {
-        Write-Host "Error fetching users from OU $ouDN : $_" -ForegroundColor Red
-        return @()  # Return empty array on error
-    }
-}
-
-
-# Creation of Organizational Units
+# Create OU's
 function Create-OrganizationalUnits {
     foreach ($user in $users) {
-        if ($user.OU) {
-            try {
-                $ouName = $user.OU
-                $ouPath = "DC=$DC1,DC=$DC2"
-                $ouDN = "OU=$ouName,$ouPath"
+        try {
+            $ouName = $user.OU
+            $ouPath = "DC=$DC1,DC=$DC2"
+            $ouDN = "OU=$ouName,$ouPath"
+            if (-not (Get-ADOrganizationalUnit -LDAPFilter "(distinguishedName=$ouDN)" -ErrorAction SilentlyContinue)) {
+                New-ADOrganizationalUnit -Name $ouName -Path $ouPath
+                Write-Host "Created OU: $ouName" -ForegroundColor Green
 
-                # Check if OU exists, and create it if not
-                if (-not (Get-ADOrganizationalUnit -LDAPFilter "(distinguishedName=$ouDN)" -ErrorAction SilentlyContinue)) {
-                    New-ADOrganizationalUnit -Name $ouName -Path $ouPath
-                    Write-Host "Created OU: $ouName" -ForegroundColor Green
-                } # else {continue}
-            } catch {
-                Write-Host "Error creating OU '$($user.OU)': $($_.Exception.Message)" -ForegroundColor Red
-                Add-Content -Path $ErrorsLogPath -Value "Error creating OU '$($user.OU)': $($_.Exception.Message)"
             }
+        
+        } catch {
+            Write-Host "Error creating OU '$($user.OU)': $($_.Exception.Message)" -ForegroundColor Red
+            Add-Content -Path $ErrorsLogPath -Value "Error creating OU '$($user.OU)': $($_.Exception.Message)"
         }
+        
     }
 }
+
+# Get OU's
+function Create-AndShareFolderOFOU {
+    param (
+        [Parameter(Mandatory)]
+        [array]$users
+    )
+
+    $ouDict = @{}
+
+    $users | Select-Object -ExpandProperty OU -Unique | ForEach-Object {
+        $ouName = $_.Trim()
+        if ($ouName) {
+            $dn = "OU=$ouName,DC=$DC1,DC=$DC2"
+            $shareName = "${ouName}Share"
+            $ouDict[$dn] = $shareName
+        }
+    }
+
+    return $ouDict
+}
+
+
 
 # Delete Organizational Units (OUs)
 function Delete-OrganizationalUnits {

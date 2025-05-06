@@ -1,0 +1,7 @@
+FullName,Username,Permissions,OU,Password
+Alice Johnson,ajohnson,Read,HR,P@ssw0rd!
+Bob Smith,bsmith,Write,Finance,P@ssw0rd!
+Charlie Davis,cdavis,Full,IT,P@ssw0rd!
+Dana Lee,dlee,Full,HR,P@ssw0rd!
+Ethan Wright,ewright,Read,Finance,P@ssw0rd!
+Fiona Green,fgreen,Write,IT,P@ssw0rd!

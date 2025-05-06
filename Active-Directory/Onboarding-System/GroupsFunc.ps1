@@ -1,10 +1,13 @@
-# Create AD Groups
+# Create Groups
 function Create-Groups {
-    $groups = @("Read Group", "Write Group", "Create Group", "Delete Group", "FullControl Group")
     foreach ($group in $groups) {
         try {
             if (-not (Get-ADGroup -Filter "Name -eq '$group'" -ErrorAction SilentlyContinue)) {
-                New-ADGroup -Name $group -GroupScope Global -GroupCategory Security -Path "DC=$DC1,DC=$DC2" -Description "$($group) Permissions Group"
+                New-ADGroup -Name $group `
+                            -GroupScope Global `
+                            -GroupCategory Security `
+                            -Path "DC=$DC1,DC=$DC2" `
+                            -Description "$group Permissions Group"
                 Write-Host "Created group: $group" -ForegroundColor Green
             }
         } catch {
@@ -13,6 +16,8 @@ function Create-Groups {
         }
     }
 }
+
+
 
 # Delete Groups
 function Delete-Groups {
