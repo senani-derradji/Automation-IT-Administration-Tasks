@@ -19,7 +19,9 @@ Active-Directory/
     └── main.ps1                             # Main script to execute the full onboarding process
 
 └── Resources-Monitor/
+    ├── SchedulerTask-Auto.ps1               # Create Scheduler Task         
     └── main.ps1                             # Script to monitor CPU/RAM usage across AD computers
+     
 ```
 
 ## Descriptions of Files
