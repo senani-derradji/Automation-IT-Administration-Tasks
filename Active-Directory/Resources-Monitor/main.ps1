@@ -4,8 +4,8 @@ $ErrorsPath = "$PSScriptRoot\Errors.log"
 $csvPath = "$PSScriptRoot\MonitoringResult.csv"
 
 # Loop Time Checking
-Write-Host "Time of Checking (seconds) :" -ForegroundColor Green -NoNewline
-$LoopTime = Read-Host
+#Write-Host "Time of Checking (seconds) :" -ForegroundColor Green -NoNewline
+#$LoopTime = Read-Host
 
 # This Function For Checking On/Off Computers and Return On Computers
 function CheckOnlineDevices {
@@ -38,7 +38,7 @@ function CheckOnlineDevices {
 }
 
 # Start Checking with While True Func
-while ($true) {
+#while ($true) {
    $ComputersOnlineDict = CheckOnlineDevices
 
    # Make Sure Online Dict not Empty
@@ -66,7 +66,6 @@ while ($true) {
                 $First3CpuProcesses = Get-Process | Sort-Object CPU -Descending | Select-Object -First 3 Name, @{Name="CPU_Sec"; Expression={[math]::Round($_.CPU, 2)}}
                 $First3RamProcesses = Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First 3 Name, @{Name="RAM_MB"; Expression={[math]::Round($_.WorkingSet / 1MB, 2)}}
 
-   
                 return [PSCustomObject]@{
                        CPU_Value = $CPU_Value
                        RAM_Value = $RAM_Value
@@ -75,55 +74,45 @@ while ($true) {
                        First3RamProcesses =  $First3RamProcesses
                 }
             }
-
             
             # Monitoring File .csv
             if (-not (Test-Path $csvPath)) {
-                Write-Host "There is no Monitoring Result File !!" -ForegroundColor Red
+                # Write-Host "There is no Monitoring Result File !!" -ForegroundColor Red
                 Add-Content -Path $csvPath -Value "Computer, H-Value,H-Alert,H-Processes,Time"
-                Write-Host "Create It Successfully !! " -ForegroundColor Green
+                # Write-Host "Create It Successfully !! " -ForegroundColor Green
             }
 
             # Time Of Operation or Task Check
             $timestamp = Get-Date -Format 'MM-dd HH:mm:ss'
 
-
             # CPU Check
-            if ($Informations.CPU_Value -gt 50) {
-                add-Content -Path $EventsPath -Value "CPU Alert : $($Informations.CPU_Value) in $timestamp"
+            if ($Informations.CPU_Value -gt 70) {
+                add-Content -Path $EventsPath -Value "$ComputerName -> CPU Alert : $($Informations.CPU_Value) in $timestamp"
                 $msg = "$ComputerName,$CPU_Value%,CPU alert,$($Informations.First3CpuProcesses.Name) : $($Informations.First3CpuProcesses.CPU_Sec),$timestamp"
-                Write-Host $msg -BackgroundColor Red
+                # Write-Host $msg -BackgroundColor Red
                 Add-Content -Path $csvPath -Value $msg
             }
-            else{
-                Write-Host "$ComputerName CPU is Alright !" -BackgroundColor Green
-            }
-
             
             # RAM Check
-            if ($Informations.RAM_Value -gt 50) {
-                add-Content -Path $EventsPath -Value "RAM Alert : $($Informations.RAM_Value) in $timestamp"
+            if ($Informations.RAM_Value -gt 80) {
+                add-Content -Path $EventsPath -Value "$ComputerName -> RAM Alert : $($Informations.RAM_Value) in $timestamp"
                 $msg = "$ComputerName,$RAM_Value%,RAM alert,$($Informations.First3RamProcesses.Name) : $($Informations.First3RamProcesses.RAM_MB),$timestamp"
-                Write-Host $msg -BackgroundColor Red
+                # Write-Host $msg -BackgroundColor Red
                 Add-Content -Path $csvPath -Value $msg
             }
-            else{
-                Write-Host "$ComputerName RAM is Alright !" -BackgroundColor Green
-            }
-
-
+            
             # Disk Check
             $DisksUs = $Informations.DiskUsage
             foreach ($data in $DisksUs.GetEnumerator()) {
                 $key = $data.Key
                 $Value = $data.Value
                 if($value -ne 0){
-                    if ($Value -lt 10) {
-                        add-Content -Path $EventsPath -Value "Disk Alert : ($key) : ($Value) in $timestamp"
+                    if ($Value -lt 100) {
+                        add-Content -Path $EventsPath -Value "$ComputerName -> Disk Alert : ($key) : ($Value) in $timestamp"
                         $msg = "$ComputerName,Driver $key : Free $Value,Disk Alert,$timestamp"
-                        Write-Host $msg -BackgroundColor Red
+                        # Write-Host $msg -BackgroundColor Red
                         Add-Content -Path $csvPath -Value $msg
-                    }else{ Write-Host "$ComputerName DISK Space is Alright !" -BackgroundColor Green }
+                    }
                 }
             }
 
@@ -133,10 +122,11 @@ while ($true) {
         }
       }
     # Sleep ....
-    Start-Sleep -Seconds $LoopTime
+    # Start-Sleep -Seconds $LoopTime
     }else {
        $msg =  "There is no Online Computers"
        Add-Content -Path $ErrorsPath -Value $msg : $timestamp
-       Write-Host $msg -ForegroundColor Red
+       # Write-Host $msg -ForegroundColor Red
     }
-}
+    #break
+#}
